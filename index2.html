@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMC | Structural Design</title>
+    <!-- Sharp, editorial fonts completely different from index.html -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Oswald:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-color: #005995; /* The logo color */
+            --dark: #0a0e17;
+            --cream: #f4f5f6;
+            --white: #ffffff;
+            --gray: #8892b0;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; font-size: 16px; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--cream);
+            color: var(--dark);
+            /* Key change: A Flex split layout */
+            display: flex;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, .nav-item {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- FIXED LEFT SIDEBAR (The Navigation & Brand Column) --- */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 35vw;
+            height: 100vh;
+            background-color: var(--white);
+            border-right: 1px solid var(--border);
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 10;
+        }
+
+        .brand-zone { margin-bottom: 2rem; }
+        .brand-zone img { height: 45px; margin-bottom: 3rem; }
+
+        .brand-statement {
+            font-size: 2.5rem;
+            line-height: 1.1;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--dark);
+        }
+
+        .brand-statement span {
+            color: var(--brand-color);
+        }
+
+        .main-nav { margin: auto 0; }
+        .main-nav ul { display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        .main-nav a {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--gray);
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .main-nav a::before {
+            content: '';
+            width: 0;
+            height: 2px;
+            background-color: var(--brand-color);
+            margin-right: 0;
+            transition: all 0.3s ease;
+        }
+
+        .main-nav a:hover, .main-nav a.active {
+            color: var(--dark);
+            transform: translateX(10px);
+        }
+
+        .main-nav a:hover::before, .main-nav a.active::before {
+            width: 40px;
+            margin-right: 20px;
+        }
+
+        .sidebar-footer {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        .sidebar-footer a { border-bottom: 1px solid var(--gray); padding-bottom: 2px; transition: 0.3s;}
+        .sidebar-footer a:hover { color: var(--brand-color); border-color: var(--brand-color); }
+
+        /* --- SCROLLING RIGHT CONTENT (The Editorial Canvas) --- */
+        .content {
+            margin-left: 35vw;
+            width: 65vw;
+            background-color: var(--cream);
+            padding-bottom: 10rem;
+        }
+
+        /* Large Editorial Image Blocks */
+        .hero-banner {
+            width: 100%;
+            height: 85vh;
+            position: relative;
+        }
+        
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content-section {
+            padding: 8rem 6rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-marker {
+            font-family: 'Oswald', sans-serif;
+            font-size: 6rem;
+            font-weight: 700;
+            color: var(--border);
+            line-height: 1;
+            margin-bottom: 2rem;
+        }
+
+        .editorial-title {
+            font-size: 4.5rem;
+            line-height: 1;
+            margin-bottom: 3rem;
+            letter-spacing: -1px;
+        }
+
+        .editorial-text {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #4a5568;
+            columns: 2;
+            column-gap: 3rem;
+        }
+
+        /* Unique Magazine-style grid for divisions */
+        .division-block {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .div-item {
+            display: flex;
+            flex-direction: column;
+            group: hover;
+            cursor: pointer;
+        }
+
+        .div-img-box {
+            width: 100%;
+            aspect-ratio: 4/5;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .div-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+            filter: grayscale(80%);
+        }
+
+        .div-item:hover .div-img-box img {
+            transform: scale(1.05);
+            filter: grayscale(0%);
+        }
+
+        .div-category {
+            font-family: 'Oswald', sans-serif;
+            color: var(--brand-color);
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            margin-bottom: 0.5rem;
+        }
+
+        .div-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .div-desc {
+            font-size: 1rem;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+
+        /* Contact Block */
+        .contact-box {
+            background-color: var(--dark);
+            color: var(--white);
+            padding: 6rem;
+            margin: 6rem;
+        }
+
+        .contact-box h2 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-box p {
+            font-size: 1.25rem;
+            color: var(--gray);
+            margin-bottom: 4rem;
+        }
+
+        .contact-row {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding: 1.5rem 0;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            transition: 0.3s ease;
+        }
+
+        .contact-row:hover {
+            color: var(--brand-color);
+            border-color: var(--brand-color);
+            padding-left: 1rem;
+            cursor: pointer;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1024px) {
+            body { flex-direction: column; }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 4rem 2rem;
+            }
+            .content { margin-left: 0; width: 100%; }
+            .brand-statement { font-size: 2rem; margin-bottom: 3rem; }
+            .main-nav { margin: 2rem 0; }
+            .main-nav ul { flex-direction: row; flex-wrap: wrap; }
+            .main-nav a { font-size: 1.1rem; }
+            .content-section { padding: 4rem 2rem; }
+            .editorial-text { columns: 1; }
+            .contact-box { margin: 2rem; padding: 3rem; }
+        }
+        
+        @media (max-width: 600px) {
+            .division-block { grid-template-columns: 1fr; }
+            .editorial-title { font-size: 3rem; }
+            .contact-box h2 { font-size: 2.5rem; }
+            .contact-row { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT SIDEBAR: Static Navigation & Identity -->
+    <aside class="sidebar">
+        <div class="brand-zone">
+            <!-- Brand Logo -->
+            <img src="static/Images/mmc_logo_nav.png" alt="MMC Group">
+            <h1 class="brand-statement">ENGINEERING<br><span>GLOBAL</span><br>EXPANSION.</h1>
+        </div>
+
+        <nav class="main-nav">
+            <ul id="nav-list">
+                <li><a href="#company" class="nav-item active">01. Company</a></li>
+                <li><a href="#divisions" class="nav-item">02. Divisions</a></li>
+                <li><a href="#operations" class="nav-item">03. Operations</a></li>
+                <li><a href="#contact" class="nav-item">04. Contact</a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p>MMC Headquarters<br>London, United Kingdom</p><br>
+            <p><a href="#">Download Investor PDF (2.4MB)</a></p>
+        </div>
+    </aside>
+
+    <!-- RIGHT CONTENT: Scrolling Editorial Canvas -->
+    <main class="content">
+        
+        <!-- Massive Hero Banner Image -->
+        <div class="hero-banner">
+            <img src="static/Images/corp_skyscraper.png" alt="Corporate Architecture">
+        </div>
+
+        <!-- 01 Company Overview -->
+        <section id="company" class="content-section">
+            <div class="section-marker">01</div>
+            <h2 class="editorial-title">THE NEW STANDARD OF HOLDING</h2>
+            <div class="editorial-text">
+                <p>We are MMC, a conglomerate defined by structural intelligence and operational mastery. We dismantle traditional corporate silos in favor of a universally integrated infrastructure that accelerates growth across every sector we touch.</p>
+                <p>By injecting massive capital reserves and implementing advanced digital ecosystems, we provide our subsidiaries with an unprecedented advantage. Our portfolio consists only of the most vital foundations of the modern economy: Real Estate infrastructure, Advanced Technology, and Energy.</p>
+            </div>
+            
+            <img src="static/Images/corp_handshake.png" alt="Operations" style="width: 100%; height: 500px; object-fit: cover; margin-top: 4rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        </section>
+
+        <!-- 02 Divisions / Portfolio -->
+        <section id="divisions" class="content-section">
+            <div class="section-marker">02</div>
+            <h2 class="editorial-title">OUR PORTFOLIO</h2>
+            
+            <div class="division-block">
+                
+                <!-- Division Item -->
+                <div class="div-item">
+                    <div class="div-img-box"><img src="static/Images/corp_skyscraper.png" alt="Real Estate"></div>
+                    <span class="div-category">INFRASTRUCTURE</span>
+                    <h3 class="div-title">MMC PROPERTY OPS</h3>
+                    <p class="div-desc">Developing sustainable, high-yield commercial environments designed for the next century of enterprise and societal progress.</p>
+                </div>
+
+                <!-- Division Item -->
+                <div class="div-item">
+                    <div class="div-img-box"><img src="static/Images/corp_tech.png" alt="Technology"></div>
+                    <span class="div-category">INNOVATION</span>
+                    <h3 class="div-title">MMC CLOUD ARCHITECTURE</h3>
+                    <p class="div-desc">Driving the digital frontier with enterprise server architecture, automated data streams, and profound AI software systems.</p>
+                </div>
+
+                <!-- Division Item -->
+                <div class="div-item">
+                    <div class="div-img-box"><img src="static/Images/corp_energy.png" alt="Energy"></div>
+                    <span class="div-category">SUSTAINABILITY</span>
+                    <h3 class="div-title">MMC KINETIC POWER</h3>
+                    <p class="div-desc">Pioneering a zero-emission future by deploying vast renewable energy projects across global priority sites.</p>
+                </div>
+
+                <!-- Division Item -->
+                <div class="div-item">
+                    <div class="div-img-box"><img src="static/Images/corp_handshake.png" alt="Capital"></div>
+                    <span class="div-category">WEALTH GENERATION</span>
+                    <h3 class="div-title">MMC QUANT CAPITAL</h3>
+                    <p class="div-desc">Algorithmic liquidation strategies and direct venture funding acting as the financial engine for our network.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 03 Operations Output -->
+        <section id="operations" class="content-section">
+            <div class="section-marker">03</div>
+            <h2 class="editorial-title">GLOBAL FOOTPRINT</h2>
+            <div class="editorial-text">
+                <p>Operating across 50+ nations with over 12,000 personnel. Our logistical networks trace the globe, ensuring that every division functions fluidly, unrestricted by borders. From the financial hubs of London to the tech sectors of Tokyo, our presence guarantees seamless execution of our enterprise mandates.</p>
+            </div>
+            <!-- Large panoramic image -->
+            <img src="static/Images/corp_skyscraper.png" alt="Global Network" style="width: 100%; height: 350px; object-fit: cover; margin-top: 3rem; filter: grayscale(100%) contrast(1.2);">
+        </section>
+
+        <!-- 04 Contact -->
+        <section id="contact">
+            <div class="contact-box">
+                <h2>INITIATE DIALOGUE</h2>
+                <p>Partner with the nexus of global enterprise operations.</p>
+                
+                <div class="contact-row">
+                    <span>EXECUTIVE INQUIRIES</span>
+                    <span>INFO@MMCGROUP.COM</span>
+                </div>
+                <div class="contact-row">
+                    <span>INVESTOR RELATIONS</span>
+                    <span>CAPITAL@MMCGROUP.COM</span>
+                </div>
+                <div class="contact-row">
+                    <span>DOMESTIC TELEPHONE</span>
+                    <span>+1.800.MMC.EXEC</span>
+                </div>
+            </div>
+            
+            <div style="text-align: center; color: var(--gray); font-size: 0.9rem; padding: 2rem;">
+                &copy; 2026 MMC GROUP STRUCTURAL OPS
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Simple Intersection Observer to highlight the fixed sidebar nav based on scrolling
+        const sections = document.querySelectorAll('section');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px -50% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    
+                    // remove active from all
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    
+                    // add active to the intersecting one
+                    const activeNav = document.querySelector(`.nav-item[href="#${id}"]`);
+                    if(activeNav) activeNav.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>
